@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Secure Exam – Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body data-page="admin">
+  <div class="container">
+    <h1>Admin Panel</h1>
+
+    <section id="adminLoginSection">
+      <h3>Admin Login</h3>
+      <div class="field">
+        <label for="adminPassword">Password</label>
+        <input type="password" id="adminPassword" />
+      </div>
+      <button id="adminLoginBtn" class="primary-btn">Login</button>
+      <small class="note">Default password is <code>admin123</code> (change in <code>.env</code>).</small>
+    </section>
+
+    <section id="adminPanelSection" class="hidden">
+      <div class="admin-top-bar">
+        <h3>Manage Questions</h3>
+        <button id="adminLogoutBtn" class="secondary-btn">Logout</button>
+      </div>
+
+      <form id="questionForm">
+        <input type="hidden" id="questionIndex" />
+        <input type="hidden" id="questionId" />
+        <div class="field">
+          <label for="questionInput">Question</label>
+          <textarea id="questionInput" required></textarea>
+        </div>
+
+        <div class="field">
+          <label>Options</label>
+          <input type="text" id="optA" placeholder="Option A" required />
+          <input type="text" id="optB" placeholder="Option B" required />
+          <input type="text" id="optC" placeholder="Option C" required />
+          <input type="text" id="optD" placeholder="Option D" required />
+        </div>
+
+        <div class="field">
+          <label for="correctOption">Correct Option (A/B/C/D)</label>
+          <input type="text" id="correctOption" maxlength="1" required />
+        </div>
+
+        <button type="submit" class="primary-btn">Save Question</button>
+        <button type="button" id="resetFormBtn" class="secondary-btn">Clear</button>
+      </form>
+
+      <h3>Question List</h3>
+      <table id="questionsTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Question</th>
+            <th>Correct</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <h3>Results</h3>
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Score</th>
+            <th>Percentage</th>
+            <th>Submitted At</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </div>
+
+  <script src="/main.js"></script>
+</body>
+</html>

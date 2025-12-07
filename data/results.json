@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "userName": "mustakim Shaikh",
+    "email": "test@gmail.com",
+    "correct": 1,
+    "total": 3,
+    "percentage": 33.33,
+    "submittedAt": "2025-12-07T05:18:33.555Z"
+  },
+  {
+    "id": 2,
+    "userName": "mustakim Shaikh",
+    "email": "test@gmail.com",
+    "correct": 1,
+    "total": 3,
+    "percentage": 33.33,
+    "submittedAt": "2025-12-07T05:18:41.438Z"
+  }
+]

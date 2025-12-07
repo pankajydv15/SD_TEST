@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "question": "Which HTML tag is used to include JavaScript code?",
+    "options": [
+      "<script>",
+      "<js>",
+      "<javascript>",
+      "<code>"
+    ],
+    "correct": "A"
+  },
+  {
+    "id": 2,
+    "question": "Which HTTP method is generally used to create a new resource?",
+    "options": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "correct": "B"
+  },
+  {
+    "id": 3,
+    "question": "Which of the following is NOT a JavaScript data type?",
+    "options": [
+      "Number",
+      "String",
+      "Float",
+      "Boolean"
+    ],
+    "correct": "C"
+  }
+]

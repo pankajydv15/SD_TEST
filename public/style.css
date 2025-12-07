@@ -1,0 +1,211 @@
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f5f7fb;
+  color: #222;
+}
+
+/* Disable selection globally */
+body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+h1, h2, h3 {
+  margin-top: 0;
+}
+
+.field {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+input, textarea, button {
+  font: inherit;
+}
+
+input, textarea {
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+}
+
+textarea {
+  min-height: 70px;
+}
+
+.primary-btn,
+.secondary-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  margin-right: 0.5rem;
+}
+
+.primary-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.secondary-btn {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.primary-btn:disabled,
+.secondary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.required {
+  color: #ef4444;
+}
+
+.error {
+  color: #ef4444;
+  font-size: 0.85rem;
+}
+
+.note {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+/* Exam page */
+.exam-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.status-panel {
+  text-align: right;
+}
+
+#timer {
+  font-weight: 600;
+}
+
+#warnings {
+  color: #b91c1c;
+}
+
+.webcam-section {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+#webcamVideo {
+  width: 100%;
+  max-height: 220px;
+  border-radius: 0.75rem;
+  background: #111827;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.overlay-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  max-width: 400px;
+  text-align: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.exam-section #questionText {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+#options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.option-item {
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.option-item input[type="radio"] {
+  transform: scale(1.1);
+}
+
+.exam-controls {
+  margin-top: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th, td {
+  border: 1px solid #e5e7eb;
+  padding: 0.4rem 0.5rem;
+  vertical-align: top;
+}
+
+th {
+  background: #f3f4f6;
+}
+
+.admin-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 600px) {
+  .exam-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
