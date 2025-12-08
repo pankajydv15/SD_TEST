@@ -1,29 +1,20 @@
+// ===================== main.js =====================
 
-// main.js
-
-// ===== General anti-copy / anti-inspect =====
+// ===== General anti-copy / anti-inspect (kept as per Version B) =====
 (function setupGlobalGuards() {
   ["copy", "cut", "paste"].forEach((evt) => {
-    document.addEventListener(evt, (e) => {
-      e.preventDefault();
-    });
+    document.addEventListener(evt, (e) => e.preventDefault());
   });
 
   document.addEventListener("contextmenu", (e) => e.preventDefault());
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "F12") {
-      e.preventDefault();
-    }
+    if (e.key === "F12") e.preventDefault();
     if (e.ctrlKey || e.metaKey) {
       const key = e.key.toLowerCase();
       const blocked = ["c", "v", "x", "u", "s", "p"];
-      if (blocked.includes(key)) {
-        e.preventDefault();
-      }
-      if (e.shiftKey && key === "i") {
-        e.preventDefault();
-      }
+      if (blocked.includes(key)) e.preventDefault();
+      if (e.shiftKey && key === "i") e.preventDefault();
     }
   });
 })();
@@ -31,15 +22,14 @@
 const PAGE = document.body.dataset.page;
 
 function isEmailValid(email) {
-  const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return pattern.test(String(email).toLowerCase());
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.toLowerCase());
 }
 
 function showAlert(msg) {
   alert(msg);
 }
 
-// ===== LOGIN PAGE =====
+// ================= LOGIN PAGE =================
 if (PAGE === "login") {
   const loginForm = document.getElementById("loginForm");
   const emailInput = document.getElementById("email");
@@ -53,18 +43,9 @@ if (PAGE === "login") {
     const name = nameInput.value.trim();
     const email = emailInput.value.trim();
 
-    if (!name) {
-      showAlert("Name is required.");
-      return;
-    }
-    if (!email) {
-      emailError.textContent = "Email is required.";
-      return;
-    }
-    if (!isEmailValid(email)) {
-      emailError.textContent = "Please enter a valid email address.";
-      return;
-    }
+    if (!name) return showAlert("Name is required.");
+    if (!email) return (emailError.textContent = "Email is required.");
+    if (!isEmailValid(email)) return (emailError.textContent = "Enter a valid email.");
 
     sessionStorage.setItem("examUserName", name);
     sessionStorage.setItem("examUserEmail", email);
@@ -73,14 +54,12 @@ if (PAGE === "login") {
   });
 }
 
-// ===== EXAM PAGE =====
+// ================= EXAM PAGE =================
 if (PAGE === "exam") {
   const userName = sessionStorage.getItem("examUserName");
   const userEmail = sessionStorage.getItem("examUserEmail");
 
-  if (!userName || !userEmail) {
-    window.location.href = "/";
-  }
+  if (!userName || !userEmail) window.location.href = "/";
 
   const userInfoEl = document.getElementById("userInfo");
   const timerEl = document.getElementById("timer");
@@ -91,8 +70,6 @@ if (PAGE === "exam") {
   const examSectionEl = document.getElementById("examSection");
   const resultSectionEl = document.getElementById("resultSection");
   const resultTextEl = document.getElementById("resultText");
-  const webcamStatusEl = document.getElementById("webcamStatus");
-  const webcamVideoEl = document.getElementById("webcamVideo");
   const deviceBlockerEl = document.getElementById("deviceBlocker");
 
   const prevBtn = document.getElementById("prevBtn");
@@ -106,256 +83,147 @@ if (PAGE === "exam") {
   let warningLastTimestamp = 0;
   let timerInterval = null;
   let remainingSeconds = EXAM_DURATION_MINUTES * 60;
-
   let questions = [];
   let answers = [];
   let currentIndex = 0;
 
   userInfoEl.textContent = `${userName} (${userEmail})`;
 
+  // === Device check remains active ===
   function checkDevice() {
-    const isMobileUA = /Mobi|Android|iPhone|iPad|iPod/i.test(
-      navigator.userAgent
-    );
-    const isTooSmall = window.innerWidth < 700 || window.innerHeight < 500;
+    const mobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const small = window.innerWidth < 700 || window.innerHeight < 500;
 
-    if (isMobileUA || isTooSmall) {
+    if (mobile || small) {
       deviceBlockerEl.classList.remove("hidden");
       return false;
-    } else {
-      deviceBlockerEl.classList.add("hidden");
-      return true;
     }
+    deviceBlockerEl.classList.add("hidden");
+    return true;
   }
 
+  // == Warning System remains ==
   function addWarning(reason) {
     const now = Date.now();
-    if (now - warningLastTimestamp < 2000) {
-      return;
-    }
+    if (now - warningLastTimestamp < 2000) return;
     warningLastTimestamp = now;
 
     warningCount++;
-    warningsEl.textContent = `Warnings: ${warningCount} / ${MAX_WARNINGS}`;
-    console.warn("Warning:", reason);
-
+    warningsEl.textContent = `Warnings: ${warningCount}/${MAX_WARNINGS}`;
     showAlert(`Warning ${warningCount}/${MAX_WARNINGS}: ${reason}`);
 
-    if (warningCount >= MAX_WARNINGS) {
-      finishExam("Exam ended because you violated exam rules multiple times.");
-    }
+    if (warningCount >= MAX_WARNINGS) finishExam("Exam ended due to violations.");
   }
 
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      addWarning("You switched tabs or minimized the window.");
-    }
+    if (document.hidden) addWarning("Tab change detected.");
   });
 
   window.addEventListener("blur", () => {
-    addWarning("Window lost focus (possible tab switch or app change).");
+    addWarning("Window lost focus.");
   });
 
+  // Timer
   function formatTime(sec) {
-    const m = Math.floor(sec / 60)
-      .toString()
-      .padStart(2, "0");
-    const s = (sec % 60).toString().padStart(2, "0");
-    return `${m}:${s}`;
+    return `${String(Math.floor(sec/60)).padStart(2,"0")}:${String(sec%60).padStart(2,"0")}`;
   }
 
   function startTimer() {
-    timerEl.textContent = `Time left: ${formatTime(remainingSeconds)}`;
+    timerEl.textContent = formatTime(remainingSeconds);
     timerInterval = setInterval(() => {
       remainingSeconds--;
-      if (remainingSeconds <= 0) {
-        clearInterval(timerInterval);
-        timerEl.textContent = "Time left: 00:00";
-        finishExam("Time is over. The test has been submitted automatically.");
-        return;
-      }
-      timerEl.textContent = `Time left: ${formatTime(remainingSeconds)}`;
+      timerEl.textContent = formatTime(remainingSeconds);
+      if (remainingSeconds <= 0) finishExam("Time over.");
     }, 1000);
   }
 
+  // Render Question
   function renderQuestion(index) {
     const q = questions[index];
-    if (!q) return;
-
-    questionTextEl.textContent = `${index + 1}. ${q.question}`;
+    questionTextEl.textContent = `${index+1}. ${q.question}`;
     optionsEl.innerHTML = "";
 
-    const selected = answers[index]?.selectedOption || null;
+    const selected = answers[index]?.selectedOption;
 
-    q.options.forEach((opt, i) => {
-      const letter = String.fromCharCode(65 + i);
-      const label = document.createElement("label");
-      label.className = "option-item";
+    q.options.forEach((opt,i)=>{
+      const letter = String.fromCharCode(65+i);
 
-      const input = document.createElement("input");
-      input.type = "radio";
-      input.name = "option";
-      input.value = letter;
-      input.checked = selected === letter;
-      input.addEventListener("change", () => {
-        answers[index] = {
-          questionId: q.id,
-          selectedOption: letter,
-        };
-      });
+      const label=document.createElement("label");
+      label.className="option-item";
 
-      const span = document.createElement("span");
-      span.textContent = `${letter}. ${opt}`;
+      const input=document.createElement("input");
+      input.type="radio"; input.name="option"; input.value=letter;
+      input.checked=selected===letter;
+      input.onchange=()=>answers[index]={questionId:q.id,selectedOption:letter};
 
-      label.appendChild(input);
-      label.appendChild(span);
-      optionsEl.appendChild(label);
+      label.append(input,`${letter}. ${opt}`);
+      optionsEl.append(label);
     });
 
-    questionProgressEl.textContent = `Question ${index + 1} of ${questions.length}`;
-
-    prevBtn.disabled = index === 0;
-    nextBtn.disabled = index === questions.length - 1;
+    questionProgressEl.textContent=`Question ${index+1} of ${questions.length}`;
+    prevBtn.disabled=index===0;
+    nextBtn.disabled=index===questions.length-1;
   }
 
-  async function finishExam(reasonMessage) {
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
+  // Finish Exam
+  async function finishExam(reason="Submitted.") {
+    clearInterval(timerInterval);
 
-    try {
-      const payload = {
-        userName,
-        email: userEmail,
-        answers: answers.filter(Boolean),
-      };
-
-      const res = await fetch("/api/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+    try{
+      const res=await fetch("/api/submit",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({userName,email:userEmail,answers:answers.filter(Boolean)})
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to submit exam");
-      }
-
-      const data = await res.json();
-      const { correct, total, percentage } = data;
+      const{correct,total,percentage}=await res.json();
 
       examSectionEl.classList.add("hidden");
       resultSectionEl.classList.remove("hidden");
-
-      let text = `You answered ${correct} out of ${total} questions correctly (${percentage}%).`;
-      if (reasonMessage) {
-        text = `${reasonMessage}\n\n${text}`;
-      }
-      resultTextEl.textContent = text;
-    } catch (err) {
-      console.error(err);
+      resultTextEl.textContent=`${reason}\nScore: ${correct}/${total} (${percentage}%)`;
+    }
+    catch{
       resultSectionEl.classList.remove("hidden");
-      examSectionEl.classList.add("hidden");
-      resultTextEl.textContent =
-        "There was an error submitting your exam. Please contact the administrator.";
-    } finally {
-      sessionStorage.removeItem("examUserName");
-      sessionStorage.removeItem("examUserEmail");
+      resultTextEl.textContent="Submission error. Contact admin.";
+    }
+    finally{
+      sessionStorage.clear();
     }
   }
 
-  function startWebcam() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      webcamStatusEl.textContent =
-        "Webcam not supported in this browser. Exam cannot start.";
-      showAlert(
-        "Webcam is required for this exam but is not supported in this browser."
-      );
-      return;
-    }
-
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then((stream) => {
-        webcamVideoEl.srcObject = stream;
-        webcamStatusEl.textContent = "Webcam is active. Stay in frame.";
-        examSectionEl.classList.remove("hidden");
-        startTimer();
-        renderQuestion(currentIndex);
-      })
-      .catch((err) => {
-        console.error("Webcam error", err);
-        webcamStatusEl.textContent =
-          "Webcam permission denied. Exam cannot start.";
-        showAlert(
-          "You must allow webcam access to start the exam. Reload the page and allow access."
-        );
-      });
+  // ===== Webcam Removed — exam starts without camera =====
+  function startExamDirect() {
+    document.getElementById("webcamStatus").textContent="Webcam not required.";
+    examSectionEl.classList.remove("hidden");
+    startTimer();
+    renderQuestion(currentIndex);
   }
 
-  prevBtn.addEventListener("click", () => {
-    if (currentIndex > 0) {
-      currentIndex--;
-      renderQuestion(currentIndex);
-    }
-  });
+  prevBtn.onclick=()=>{ if(currentIndex>0) renderQuestion(--currentIndex); }
+  nextBtn.onclick=()=>{ if(currentIndex<questions.length-1) renderQuestion(++currentIndex); }
+  submitBtn.onclick=()=>confirm("Submit exam?")&&finishExam("You submitted the exam.");
 
-  nextBtn.addEventListener("click", () => {
-    if (currentIndex < questions.length - 1) {
-      currentIndex++;
-      renderQuestion(currentIndex);
-    }
-  });
-
-  submitBtn.addEventListener("click", () => {
-    const confirmSubmit = confirm(
-      "Are you sure you want to submit the test now?"
-    );
-    if (confirmSubmit) {
-      finishExam("You submitted the test.");
-    }
-  });
-
-  async function loadQuestions() {
-    try {
-      const res = await fetch("/api/questions");
-      if (!res.ok) {
-        throw new Error("Failed to load questions");
-      }
-      const data = await res.json();
-      questions = data.questions || [];
-      answers = new Array(questions.length).fill(null);
-      if (!questions.length) {
-        showAlert("No questions configured. Please contact admin.");
-      }
-    } catch (err) {
-      console.error(err);
-      showAlert("Error loading questions. Please try again later.");
-    }
+  async function loadQuestions(){
+    const res=await fetch("/api/questions");
+    const data=await res.json();
+    questions=data.questions||[];
+    answers=new Array(questions.length).fill(null);
+    if(!questions.length) showAlert("No questions configured.");
   }
 
-  (async () => {
-    const deviceOk = checkDevice();
-    if (!deviceOk) {
-      addWarning(
-        "Attempted to start exam on mobile/small screen. Please use a laptop/desktop."
-      );
-      return;
-    }
-
+  (async()=>{
+    if(!checkDevice()) return addWarning("Invalid device.");
     await loadQuestions();
-    if (!questions.length) {
-      return;
-    }
-    startWebcam();
+    if(!questions.length) return;
+    startExamDirect(); // 🔥 without webcam
   })();
 
-  window.addEventListener("resize", () => {
-    checkDevice();
-  });
+  window.onresize=checkDevice;
 }
+
+// ================= ADMIN PAGE (unchanged) =================
+/* your entire admin section stays same */
+
 
 // ===== ADMIN PAGE =====
 if (PAGE === "admin") {
