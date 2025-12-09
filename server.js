@@ -93,7 +93,7 @@ function requireAdmin(req, res, next) {
 app.get("/api/questions", (req, res) => {
   const questions = readJson(QUESTIONS_FILE, []);
   const shuffled = shuffleArray(questions);
-  const count = Math.min(50, shuffled.length);
+  const count = Math.min(100, shuffled.length);
   const selected = shuffled.slice(0, count);
 
   const sanitized = selected.map((q) => ({
